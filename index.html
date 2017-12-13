@@ -1,0 +1,349 @@
+<html lang="en">
+    <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>Wes Hardaker @ ISI</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/style.css">
+    </head>
+    
+    <body>
+	<div class="container">
+	    <div class="row">
+		<div class="col-md-12">
+		    <h1>5011 Calculator</h1>
+
+		    <p>This page allows you to insert parameters that show how <a href="https://tools.ietf.org/html/rfc5011">RFC5011</a> parameters affect the proposed refinement timing in <a href="https://tools.ietf.org/html/draft-ietf-dnsop-rfc5011-security-considerations">draft-ietf-dnsop-rfc5011-security-considerations</a>.  This sumulation does not simulate network failures, only delays.</p>
+
+		    <form id="inputform">
+
+			<div class="panel panel-default"><div class="panel-heading">
+			    <h3>The following publishing parameters can be used to control the timing results:</h3> 
+			</div>
+			<div class="panel-body">
+			    <!-- add Hold Down Time -->
+			    <div class="form-group row">
+				<label for="addHoldDownTime" class="col-sm-2 col-form-label">Add Hold Down Time</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="addHoldDownTime" placeholder="2592000" value="2592000">
+				</div>
+				<div class="col-sm-6"><p><em>You probably don't want to change this</em></p></div>
+			    </div>
+
+			    <!-- publicationTime -->
+			    <div class="form-group row">
+				<label for="publicationTime" class="col-sm-2 col-form-label">publicationTime</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="publicationTime" placeholder="0" value="0">
+				</div>
+				<div class="col-sm-6"><p><em>Unix epoch timestamp (zero is easiest on humans)</em></p></div>
+			    </div>
+
+			    <!-- sigExpirationTime -->
+			    <div class="form-group row">
+				<label for="sigExpirationTime" class="col-sm-2 col-form-label">sigExpirationTime</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="sigExpirationTime" placeholder="604800" value="604800">
+				</div>
+				<div class="col-sm-6"><p><em>(all values are in seconds)</em></p></div>
+			    </div>
+
+			    <!-- TTL -->
+			    <div class="form-group row">
+				<label for="ttl" class="col-sm-2 col-form-label">TTL</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="ttl" placeholder="86400" value="86400">
+				</div>
+				<div class="col-sm-6"><p><em>of the DNSKEY RRSIGs</em></p></div>
+			    </div>
+
+			    <!-- driftSafety -->
+			    <div class="form-group row">
+				<label for="driftSafety" class="col-sm-2 col-form-label">Delay Drift Safety</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="driftSafety" placeholder="86400" value="86400">
+				</div>
+				<div class="col-sm-6"><p><em>Should be minimum of activeRefesh!<br />(Any clock drift may result in a resolver delaying acceptance up to one activeRefesh value)</em></p></div>
+			    </div>
+
+			    <!-- retrySafety -->
+			    <div class="form-group row">
+				<label for="retrySafety" class="col-sm-2 col-form-label">Retry Safety Margin</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="retrySafety" placeholder="86400" value="86400">
+				</div>
+				<div class="col-sm-6"><p><em>A reasonable amount of buffer; see <a href="https://tools.ietf.org/html/draft-ietf-dnsop-rfc5011-security-considerations">draft</a> Section 6.1.8 for suggested values.</em></p></div>
+			    </div>
+			</div>
+			</div>
+
+			<div class="panel panel-default"><div class="panel-heading">
+			    <h3>The following are resolvers simulation parameters:</h3> 
+			</div>
+			<div class="panel-body">
+			    <!-- queryOffset -->
+			    <div class="form-group row">
+				<label for="queryOffset" class="col-sm-2 col-form-label">Resolver Query Offset Amount</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="queryOffset" placeholder="0" value="0">
+				</div>
+				<div class="col-sm-6"><p><em>Amount beyond publication the resolver will first query; <br />Will be limit to an upper value of activeRefresh from below.</em></p></div>
+			    </div>
+
+			    <!-- queryDrift -->
+			    <div class="form-group row">
+				<label for="queryDrift" class="col-sm-2 col-form-label">Resolver Query Drift Amount</label>
+				<div class="col-sm-4">
+				    <input type="text" class="form-control" id="queryDrift" placeholder="0" value="0">
+				</div>
+				<div class="col-sm-6"><p><em>Network, clock drift and calculation delays that delay subsequent queries.</em></p></div>
+			    </div>
+
+			    <div class="form-group row">
+				<label for="beingAttacked" class="col-sm-2 col-form-label">Is Being Attacked</label>
+				<div class="col-sm-4">
+				    <input type="checkbox" checked data-togle="toggle" class="form-control" id="beingAttacked">
+				</div>
+				<div class="col-sm-6"><p><em>Is the resolver under a successful replay attack?</em></p></div>
+			    </div>
+			</div>
+			</div>
+
+			<div class="panel panel-default"><div class="panel-heading">
+			    <h3>Calculated Parameters:</h3> 
+			</div>
+			<div class="panel-body">
+			    <!-- activeRefresh -->
+			    <div class="form-group row">
+				<label for="activeRefresh" class="col-sm-2 col-form-label">activeRefresh</label>
+				<div class="col-sm-4">
+				    <input readonly type="text" class="form-control" id="activeRefresh" placeholder="0" value="0">
+				</div>
+				<div class="col-sm-6"><p><em>The resolver will query every this many sceonds + the drift amount</em></p></div>
+			    </div>
+
+			    <!-- activeRefreshOffset -->
+			    <div class="form-group row">
+				<label for="activeRefreshOffset" class="col-sm-2 col-form-label">activeRefreshOffset</label>
+				<div class="col-sm-4">
+				    <input readonly type="text" class="form-control" id="activeRefreshOffset" placeholder="0" value="0">
+				</div>
+				<div class="col-sm-6"><p><em>If non-zero, the addHoldDownTime is not divisble by activeRefresh.</em></p></div>
+			    </div>
+			</div>
+			</div>
+
+		    </form>
+
+		    <hr />
+
+		    <div class="panel panel-default"><div class="panel-heading">
+			<h3>Timing Results</h3>
+		    </div>
+		    <div class="panel-body">
+			<p>The goal is to never have the green "DNSKEY Accepted" line's mark greater than the appropriate red line.</p>
+
+			<table id="summary" class="table">
+			</table>
+		    </div>
+		    </div>
+
+		    <div class="panel panel-default"><div class="panel-heading">
+			<h3>Timing Results Detail Table</h3>
+		    </div>
+		    <div class="panel-body">
+
+			<table id="results" class="table">
+			</table>
+		    </div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+		crossorigin="anonymous"></script>
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+	<script>
+	 stateScanning = "Scanning";
+	 stateFirstSeen = "DNSKEY First seen";
+	 stateWaiting = "Waiting in holdDown";
+	 stateAccepted = '<font color="green">DNSKEY Accepted</font>';
+
+	 calculate_parameters = function() {
+	     publicationTime = parseInt($('#publicationTime').val());
+	     sigExpirationTime = parseInt($('#sigExpirationTime').val());
+	     queryOffset = parseInt($('#queryOffset').val());
+	     queryDrift = parseInt($('#queryDrift').val());
+	     ttl = parseInt($('#ttl').val());
+	     fifteendays = 15 * 24 * 60 * 60;
+	     thirtydays = 30 * 24 * 60 * 60;
+	     addHoldDownTime = parseInt($('#addHoldDownTime').val());
+	     driftSafety = parseInt($('#driftSafety').val());
+	     retrySafety = parseInt($('#retrySafety').val());
+	     console.log("here: " + retrySafety);
+
+	     state = stateScanning;
+
+	     console.log("h: " + addHoldDownTime);
+	     
+	     activeRefresh = Math.max(60*60,
+				      Math.min(sigExpirationTime / 2,
+					       Math.max(ttl)/2,
+					       fifteendays));
+	     $('#activeRefresh').val(activeRefresh);
+
+	     console.log("active refresh: " + activeRefresh);
+
+	     activeRefreshOffset = thirtydays % activeRefresh;
+
+	     $('#activeRefreshOffset').val(activeRefreshOffset);
+
+	     // adjust query offset so it's not larger than activeRefresh
+	     if (queryOffset > activeRefresh) {
+		 queryOffset = activeRefresh;
+	     }
+	 }
+	 
+	 add_summary = function(time, event) {
+	     summaryrows = summaryrows + "<tr><td>" + time + "</td><td>" + event + "</td></tr>";
+	 }
+
+	 check_5011 = function(time) {
+	     firstNoticePoint = publicationTime + queryOffset; 
+	     if (attacked) {
+		 firstNoticePoint = firstNoticePoint + sigExpirationTime; 
+	     }
+
+	     if (time >= firstNoticePoint) {
+		 if (state === stateScanning) {
+		     state = stateFirstSeen;
+		     holdDownTimer = 0;
+		     startTimer = time;
+		     add_summary(time, state);
+		 } else if (state === stateFirstSeen) {
+		     holdDownTimer = time - startTimer;
+		     state = stateWaiting;
+		     extraInfo = "holdDownTimer = 0";
+		 } else if (state === stateWaiting) {
+		     holdDownTimer = time - startTimer;
+		     extraInfo = "holdDownTimer = " + holdDownTimer
+		     if (holdDownTimer >= addHoldDownTime) {
+			 state = stateAccepted;
+			 extraInfo = "";
+			 add_summary(time, state);
+		     }
+		 }
+	     }
+	     //console.log("t = " + time + ", state = " + state);
+	     return state;
+	 }
+	 
+
+	 get_row = function(time, event) {
+	     return("<tr><td>" + time + "</td><td>" + event + "</td>" +
+		    "<td>" + check_5011(time) + "</td></td>" +
+		    "<td>" + extraInfo + "</td></tr>");
+	 }
+
+	 add_row = function(time, event) {
+             tablerows = tablerows + get_row(time, event);
+	 }
+
+	 calculate_table = function() {
+	     table = $('#results');
+
+	     tablerows = "<tr><th>Timestamp</th><th>Event</th><th>State</th><th>Extra Info</th></tr>"
+	     summaryrows = "<tr><th>Mark</th><th>Note</th></tr>";
+
+	     console.log("starting at " + 0 + " till " + (addHoldDownTime + fifteendays));
+	     console.log("stepping every " + activeRefresh + " seconds");
+	     expectedSteps = (addHoldDownTime + fifteendays)/activeRefresh;
+	     console.log("expected steps: " + expectedSteps);
+
+	     if (expectedSteps > 1100) {
+		 table.html("<tr><td>Chickening out crashing your browser at " + expectedSteps + " expected time steps");
+		 return;
+	     }
+
+	     /* 5011 timing */
+	     attacked = $('#beingAttacked').is(":checked");
+	     console.log("attacked: " + attacked);
+	     state = stateScanning;
+	     startTimer = 0;
+	     extraInfo = "";
+
+	     endTime = (publicationTime + sigExpirationTime + addHoldDownTime + activeRefresh + driftSafety + retrySafety + fifteendays);
+
+	     events = [
+		 [publicationTime,
+		  "New DNSKEY Publication"],
+		 [publicationTime + sigExpirationTime,
+		  "sigExpirationTime = Original DNSKEY RRSIG Expires"],
+		 [publicationTime + sigExpirationTime + addHoldDownTime,
+		  "sigExpirationTime + addHoldDownTimer"],
+		 [publicationTime + sigExpirationTime + addHoldDownTime + activeRefresh,
+		  '<font color="red">sigExpirationTime + addHoldDownTimer + activeRefresh</font>'],
+		 [publicationTime + sigExpirationTime + addHoldDownTime + activeRefresh + driftSafety,
+		  '<font color="red">sigExpirationTime + addHoldDownTimer + activeRefresh + driftSafety</font>'],
+		 [publicationTime + sigExpirationTime + addHoldDownTime + activeRefresh + driftSafety + retrySafety,
+		  '<font color="red">sigExpirationTime + addHoldDownTimer + activeRefresh + driftSafety + retrySafety</font>'],
+	     ];
+
+	     // sort them since some indexs can change based on user parameters
+	     events.sort(function(a,b) { a[0] - b[0] });
+
+	     eventIndex = 0;
+	     console.log("here: " + events[eventIndex][1]);
+	     for(t = publicationTime;
+		 t < endTime;
+		 t = t + activeRefresh + queryDrift) {
+		 if (eventIndex < events.length && t >= events[eventIndex][0]) {
+		     add_row(events[eventIndex][0],
+			     "<strong>" + events[eventIndex][1] + "</strong>");
+		     add_summary(events[eventIndex][0],
+				 "<strong>" + events[eventIndex][1] + "</strong>");
+		     eventIndex += 1;
+		 }
+		 add_row(t, "Resolver Queries");
+		 //console.log("query at " + t);
+	     }
+	     
+
+
+	     console.log("done");
+	     table.html(tablerows);
+
+	     summary = $('#summary')
+	     summary.html(summaryrows);
+
+	 }
+
+	 calculate_all = function() {
+	     calculate_parameters();
+	     calculate_table();
+	 }
+
+	 $("#addHoldDownTime").on("change paste keyup", calculate_all);
+	 $("#sigExpirationTime").on("change paste keyup", calculate_all);
+	 $("#publicationTime").on("change paste keyup", calculate_all);
+	 $("#driftSafety").on("change paste keyup", calculate_all);
+	 $("#retrySafety").on("change paste keyup", calculate_all);
+	 $("#queryOffset").on("change paste keyup", calculate_all);
+	 $("#queryDrift").on("change paste keyup", calculate_all);
+	 $("#ttl").on("change paste keyup", calculate_all);
+	 $('#beingAttacked').change(calculate_all);
+
+	 calculate_all();
+	</script>
+
+
+    </body>
+</html>
