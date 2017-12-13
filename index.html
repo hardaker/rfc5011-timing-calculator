@@ -246,7 +246,6 @@
 	     return state;
 	 }
 	 
-
 	 get_row = function(time, event) {
 	     return("<tr><td>" + time + "</td><td>" + event + "</td>" +
 		    "<td>" + check_5011(time) + "</td></td>" +
@@ -300,19 +299,31 @@
 	     // sort them since some indexs can change based on user parameters
 	     events.sort(function(a,b) { a[0] - b[0] });
 
+	     // mark every 5011 publication and other data point
 	     eventIndex = 0;
-	     console.log("here: " + events[eventIndex][1]);
 	     for(t = publicationTime;
 		 t < endTime;
 		 t = t + activeRefresh + queryDrift) {
-		 if (eventIndex < events.length && t >= events[eventIndex][0]) {
-		     add_row(events[eventIndex][0],
-			     "<strong>" + events[eventIndex][1] + "</strong>");
-		     add_summary(events[eventIndex][0],
+
+		 eventText = "Resolver Queries";
+
+		 if (eventIndex < events.length) {
+		     if (t === events[eventIndex][0]) {
+			 eventText = eventText + " and " +
+				     "<strong>" + events[eventIndex][1] +
+				     "</strong>";
+			 add_summary(t, eventText);
+			 eventIndex += 1;
+		     } else if (t > events[eventIndex][0]) {
+			 console.log("-------------------");
+			 add_row(events[eventIndex][0],
 				 "<strong>" + events[eventIndex][1] + "</strong>");
-		     eventIndex += 1;
+			 add_summary(events[eventIndex][0],
+				     "<strong>" + events[eventIndex][1] + "</strong>");
+			 eventIndex += 1;
+		     }
 		 }
-		 add_row(t, "Resolver Queries");
+		 add_row(t, eventText);
 		 //console.log("query at " + t);
 	     }
 	     
