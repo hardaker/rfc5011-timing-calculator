@@ -177,6 +177,19 @@
 	 stateWaiting = "Waiting in holdDown";
 	 stateAccepted = '<font color="green">DNSKEY Accepted</font>';
 
+	 toDDHHMMSS = function (sec_num) {
+	   var days   =  Math.floor(sec_num / (24*3600));
+	   var hours   = Math.floor((sec_num - (days*24*3600)) / 3600);
+	   var minutes = Math.floor((sec_num - (days*24*3600) - (hours * 3600)) / 60);
+	   var seconds = sec_num - (days*24*3600) - (hours * 3600) - (minutes * 60);
+
+	   // if (days    < 10) {days    = "0"+days;}
+	   // if (hours   < 10) {hours   = "0"+hours;}
+	   // if (minutes < 10) {minutes = "0"+minutes;}
+	   // if (seconds < 10) {seconds = "0"+seconds;}
+	   return days+"d "+hours+'h '+minutes+'m '+seconds+'s ';
+	 }
+
 	 calculate_parameters = function() {
 	     publicationTime = parseInt($('#publicationTime').val());
 	     sigExpirationTime = parseInt($('#sigExpirationTime').val());
@@ -211,7 +224,9 @@
 	 }
 	 
 	 add_summary = function(time, event) {
-	     summaryrows = summaryrows + "<tr><td>" + time + "</td><td>" + event + "</td></tr>";
+	   summaryrows = summaryrows + "<tr><td>" + time + "</td>" +
+			 "<td>" + toDDHHMMSS(time) + "</td>" +
+			 "<td>" + event + "</td></tr>";
 	 }
 
 	 check_5011 = function(time) {
@@ -236,6 +251,7 @@
 		     if (holdDownTimer >= addHoldDownTime) {
 			 state = stateAccepted;
 			 extraInfo = "";
+			 add_row(time, state);
 			 add_summary(time, state);
 		     }
 		 }
@@ -245,8 +261,10 @@
 	 }
 	 
 	 get_row = function(time, event) {
-	     return("<tr><td>" + time + "</td><td>" + event + "</td>" +
-		    "<td>" + check_5011(time) + "</td></td>" +
+	   return("<tr><td>" + time + "</td>" +
+		  "<td>" + toDDHHMMSS(time) + "</td>" +
+		  "<td>" + event + "</td>" +
+		  "<td>" + check_5011(time) + "</td></td>" +
 		    "<td>" + extraInfo + "</td></tr>");
 	 }
 
@@ -257,8 +275,8 @@
 	 calculate_table = function() {
 	     table = $('#results');
 
-	     tablerows = "<tr><th>Timestamp</th><th>Event</th><th>State</th><th>Extra Info</th></tr>"
-	     summaryrows = "<tr><th>Mark</th><th>Note</th></tr>";
+	     tablerows = "<tr><th>Timestamp</th><th>Human Time</th><th>Event</th><th>State</th><th>Extra Info</th></tr>"
+	     summaryrows = "<tr><th>Timestamp</th><th>Human Time</th><th>Note</th></tr>";
 
 	     console.log("starting at " + 0 + " till " + (addHoldDownTime + fifteendays));
 	     console.log("stepping every " + activeRefresh + " seconds");
@@ -303,7 +321,7 @@
 
 	     // mark every 5011 publication and other data point
 	     eventIndex = 0;
-	     for(t = publicationTime;
+	     for(t = publicationTime + queryOffset;
 		 t < endTime;
 		 t = t + activeRefresh + queryDrift) {
 
@@ -311,7 +329,7 @@
 
 		 if (eventIndex < events.length) {
 		     if (t === events[eventIndex][0]) {
-			 eventText = eventText + " and " +
+			 eventText = eventText + " <br /> " +
 				     "<strong>" + events[eventIndex][1] +
 				     "</strong>";
 			 add_summary(t, eventText);
