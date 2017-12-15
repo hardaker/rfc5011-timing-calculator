@@ -207,9 +207,7 @@
 	     $('#activeRefreshOffset').val(activeRefreshOffset);
 
 	     // adjust query offset so it's not larger than activeRefresh
-	     if (queryOffset > activeRefresh) {
-		 queryOffset = activeRefresh;
-	     }
+	     queryOffset = Math.min(queryOffset, activeRefresh);
 	 }
 	 
 	 add_summary = function(time, event) {
