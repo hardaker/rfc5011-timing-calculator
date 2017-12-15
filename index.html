@@ -29,7 +29,7 @@
 			    <div class="form-group row">
 				<label for="addHoldDownTime" class="col-sm-2 col-form-label">Add Hold Down Time</label>
 				<div class="col-sm-4">
-				    <input type="text" class="form-control" id="addHoldDownTime" placeholder="2592000" value="2592000">
+				    <input type="text" class="form-control" id="addHoldDownTime" placeholder="30d" value="30d">
 				</div>
 				<div class="col-sm-6"><p><em>You probably don't want to change this</em></p></div>
 			    </div>
@@ -47,16 +47,16 @@
 			    <div class="form-group row">
 				<label for="sigExpirationTime" class="col-sm-2 col-form-label">sigExpirationTime</label>
 				<div class="col-sm-4">
-				    <input type="text" class="form-control" id="sigExpirationTime" placeholder="604800" value="604800">
+				    <input type="text" class="form-control" id="sigExpirationTime" placeholder="7d" value="7d">
 				</div>
-				<div class="col-sm-6"><p><em>(all values are in seconds)</em></p></div>
+				<div class="col-sm-6"><p><em></em></p></div>
 			    </div>
 
 			    <!-- TTL -->
 			    <div class="form-group row">
 				<label for="ttl" class="col-sm-2 col-form-label">TTL</label>
 				<div class="col-sm-4">
-				    <input type="text" class="form-control" id="ttl" placeholder="86400" value="86400">
+				    <input type="text" class="form-control" id="ttl" placeholder="1d" value="1d">
 				</div>
 				<div class="col-sm-6"><p><em>of the DNSKEY RRSIGs</em></p></div>
 			    </div>
@@ -65,7 +65,7 @@
 			    <div class="form-group row">
 				<label for="driftSafety" class="col-sm-2 col-form-label">Delay Drift Safety</label>
 				<div class="col-sm-4">
-				    <input type="text" class="form-control" id="driftSafety" placeholder="86400" value="86400">
+				    <input type="text" class="form-control" id="driftSafety" placeholder="1d" value="1d">
 				</div>
 				<div class="col-sm-6"><p><em>Should be minimum of activeRefesh!<br />(Any clock drift may result in a resolver delaying acceptance up to one activeRefesh value)</em></p></div>
 			    </div>
@@ -74,7 +74,7 @@
 			    <div class="form-group row">
 				<label for="retrySafety" class="col-sm-2 col-form-label">Retry Safety Margin</label>
 				<div class="col-sm-4">
-				    <input type="text" class="form-control" id="retrySafety" placeholder="86400" value="86400">
+				    <input type="text" class="form-control" id="retrySafety" placeholder="1d" value="1d">
 				</div>
 				<div class="col-sm-6"><p><em>A reasonable amount of buffer; see <a href="https://tools.ietf.org/html/draft-ietf-dnsop-rfc5011-security-considerations">draft</a> Section 6.1.8 for suggested values.</em></p></div>
 			    </div>
@@ -190,17 +190,42 @@
 	   return days+"d "+hours+'h '+minutes+'m '+seconds+'s ';
 	 }
 
+	 toepoch = function(value_str) {
+	   var regex = /^ *([0-9]+d|) *([0-9]+h|) *([0-9]+m|) *([0-9]+s|) *([0-9]+|) *$/;
+	   var matches = regex.exec(value_str);
+	   if (!matches) {
+	     console.log("failed match: " + value_str);
+	     return parseInt(value_str);
+	   }
+	     
+	   console.log("d: " + matches[1]);
+	   console.log("h: " + matches[2]);
+	   console.log("m: " + matches[3]);
+	   console.log("s: " + matches[4]);
+
+	   snorm = matches[5];
+	   console.log("raw: " + snorm);
+
+	   result = (parseInt(matches[1]) || 0) * 24 * 3600 +
+			     (parseInt(matches[2]) || 0) * 3600 +
+				      (parseInt(matches[3]) || 0) * 60 +
+					       (parseInt(matches[4]) || 0) +
+							 (parseInt(matches[5]) || 0);
+	   console.log("result: " + result);
+	   return result
+	 }
+
 	 calculate_parameters = function() {
-	     publicationTime = parseInt($('#publicationTime').val());
-	     sigExpirationTime = parseInt($('#sigExpirationTime').val());
-	     queryOffset = parseInt($('#queryOffset').val());
-	     queryDrift = parseInt($('#queryDrift').val());
-	     ttl = parseInt($('#ttl').val());
+	     publicationTime = toepoch($('#publicationTime').val());
+	     sigExpirationTime = toepoch($('#sigExpirationTime').val());
+	     queryOffset = toepoch($('#queryOffset').val());
+	     queryDrift = toepoch($('#queryDrift').val());
+	     ttl = toepoch($('#ttl').val());
 	     fifteendays = 15 * 24 * 60 * 60;
 	     thirtydays = 30 * 24 * 60 * 60;
-	     addHoldDownTime = parseInt($('#addHoldDownTime').val());
-	     driftSafety = parseInt($('#driftSafety').val());
-	     retrySafety = parseInt($('#retrySafety').val());
+	     addHoldDownTime = toepoch($('#addHoldDownTime').val());
+	     driftSafety = toepoch($('#driftSafety').val());
+	     retrySafety = toepoch($('#retrySafety').val());
 	     console.log("here: " + retrySafety);
 
 	     state = stateScanning;
